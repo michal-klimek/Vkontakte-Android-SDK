@@ -1,4 +1,6 @@
-package org.oauthtest.mytest;
+package org.stonerhawk.vkontakte;
+
+import org.oauthtest.mytest.R;
 
 import android.app.AlertDialog;
 import android.app.Dialog;

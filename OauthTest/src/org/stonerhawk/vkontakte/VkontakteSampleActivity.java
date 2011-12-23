@@ -1,6 +1,7 @@
-package org.oauthtest.mytest;
+package org.stonerhawk.vkontakte;
 
-import org.oauthtest.mytest.Vkontakte.VkontakteListener;
+import org.oauthtest.mytest.R;
+import org.stonerhawk.vkontakte.Vkontakte.VkontakteListener;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -16,7 +17,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class OauthTestActivity extends Activity implements OnClickListener, VkontakteListener
+public class VkontakteSampleActivity extends Activity implements OnClickListener, VkontakteListener
 {
 	private Vkontakte vk = null;
 	

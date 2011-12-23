@@ -1,4 +1,4 @@
-package org.oauthtest.mytest;
+package org.stonerhawk.vkontakte;
 
 import android.app.*;
 import android.content.Context;

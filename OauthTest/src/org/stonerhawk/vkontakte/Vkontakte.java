@@ -1,4 +1,4 @@
-package org.oauthtest.mytest;
+package org.stonerhawk.vkontakte;
 
 import java.io.IOException;
 
@@ -11,7 +11,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.oauthtest.mytest.VkDialog.VkDialogListener;
+import org.stonerhawk.vkontakte.VkDialog.VkDialogListener;
 
 import android.content.Context;
 import android.content.SharedPreferences;

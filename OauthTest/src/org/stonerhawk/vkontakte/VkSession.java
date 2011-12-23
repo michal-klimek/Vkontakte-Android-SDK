@@ -1,4 +1,4 @@
-package org.oauthtest.mytest;
+package org.stonerhawk.vkontakte;
 
 import android.content.Context;
 import android.content.SharedPreferences;
