@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello">Hello World, OauthTestActivity!</string>
+    <string name="app_name">OauthTest</string>
+    
+    <string name="login">login</string>
+    <string name="logout">logout</string>
+
+</resources>
