@@ -4,6 +4,7 @@ import android.app.*;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.*;
 import android.webkit.*;
 import android.widget.*;
@@ -21,6 +22,7 @@ public class VkDialog extends Dialog{
     private ProgressDialog mSpinner;
     private WebView mWebView;
     private LinearLayout mContent;
+    private final String TAG = getClass().getSimpleName();
     
     public interface VkDialogListener 
 	{
@@ -72,17 +74,31 @@ public class VkDialog extends Dialog{
         mContent.addView(mWebView);
     }
 
-    private class VkWebViewClient extends WebViewClient { 
+    
+    
+    @Override
+	public void dismiss()
+	{
+		try
+		{
+			super.dismiss();
+		}
+		catch (Exception e)
+		{
+			
+		}
+	}
+
+
+
+	private class VkWebViewClient extends WebViewClient { 
     	@Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
-        	//Log.d(Constants.DEBUG_TAG, "Redirecting URL " + url);
-            	
+        	Log.d(TAG, "Redirecting URL " + url);            	
         	if (url.startsWith(Vkontakte.CALLBACK_URL) & ( !url.contains("error") )) {
-        		//Log.d(Constants.DEBUG_TAG,"url contains callback url");
-        		
+        		Log.d(TAG,"url contains callback url");        		
         		mListener.onComplete(url);
-        		VkDialog.this.dismiss();
-        		
+        		dismiss();		
         		return true;
         	} 
         	else if(url.contains("error")){
@@ -90,27 +106,23 @@ public class VkDialog extends Dialog{
         		return false;
         	}
         	else {
-        		//Log.d(Constants.DEBUG_TAG,"url not contains callback url");
-        	    view.loadUrl(url);
-        		return true;
+        		Log.d(TAG,"url not contains callback url");
+        		return false;
         	}
         }
     	
     	@Override
         public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
-        	//Log.d(Constants.DEBUG_TAG, "Page error: " + description);
-            super.onReceivedError(view, errorCode, description, failingUrl);
-      
-            mListener.onError(description);
-            
-            VkDialog.this.dismiss();
+    		Log.d(TAG, "Page error: " + description);
+            super.onReceivedError(view, errorCode, description, failingUrl);      
+            mListener.onError(description);            
+            dismiss();
         }
     	
     	@Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
-            //Log.d(Constants.DEBUG_TAG, "Loading URL: " + url);
             super.onPageStarted(view, url, favicon);
-            
+            Log.d(TAG, "Loading URL: " + url);
             if( url.contains("error") ) {
             	VkDialog.this.dismiss();
             	return;

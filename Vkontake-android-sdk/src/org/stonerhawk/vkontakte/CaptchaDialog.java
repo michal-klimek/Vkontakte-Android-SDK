@@ -48,14 +48,13 @@ public class CaptchaDialog extends AlertDialog
 		LayoutInflater inflater = getLayoutInflater();
 		View layout = inflater.inflate(R.layout.captcha_layout,(ViewGroup)findViewById(R.id.captcha_dialog));
 		
-		text = (EditText)layout.findViewById(R.id.captcha_text); //Ккод с картинки
+		text = (EditText)layout.findViewById(R.id.captcha_text); //пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		
 		capthaImage = (ImageView)layout.findViewById(R.id.captha);
-		capthaImage.setImageResource(R.drawable.ic_launcher);
 		
 		AlertDialog.Builder builder = new AlertDialog.Builder(_mContext);
 		builder.setView(layout);
-		builder.setMessage("‚ведите код с картинки:");
+		builder.setMessage("пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ:");
 		
 		builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() 
 		{

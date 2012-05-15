@@ -1,87 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
-
-  <LinearLayout
-      android:orientation="horizontal"
-      android:layout_width="fill_parent"
-      android:layout_height="fill_parent"
-      android:layout_weight="1">
-      
-      		<LinearLayout
-      			android:orientation="vertical"
-      			android:layout_width="0dip"
-          		android:layout_height="fill_parent"
-      			android:layout_weight="1">
-      			
-      		    <TextView
-      		        android:id="@+id/name"
-      		        android:layout_width="fill_parent"
-      		        android:layout_height="50dp"
-      		        android:layout_weight="1"
-      		        android:gravity="center"
-      		        android:text="Name" />
-      		    
-      		    <TextView
-      		        android:id="@+id/surname"
-      		        android:layout_width="fill_parent"
-      		        android:layout_height="50dp"
-      		        android:layout_weight="1"
-      		        android:gravity="center"
-      		        android:text="Surname" />
-
-      		    <TextView
-          			android:text="Sex"
-          			android:gravity="center"
-          			
-          			android:layout_width="fill_parent"
-          			android:layout_height="50dp"
-          			android:layout_weight="1"/>
-      		    
-      		    <TextView
-          			android:text="Year"
-          			android:gravity="center"
-          			
-          			android:layout_width="fill_parent"
-          			android:layout_height="50dp"
-          			android:layout_weight="1"/>
-      		 </LinearLayout>
-      
-                  
-      <ImageView
-        android:id="@+id/userImage"
-        android:layout_width="170dp"
-        android:layout_height="fill_parent"
-        android:src="@drawable/ic_launcher" />
-      
-  </LinearLayout>
-        
-  <LinearLayout
-    android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:layout_weight="1">
-
-      <Button
-          android:id="@+id/posttowall"
-          android:layout_width="fill_parent"
-          android:layout_height="wrap_content"
-          android:layout_marginBottom="30dp"
-          android:text="Send to wall" />
-
-      <Button
-          android:id="@+id/sendMessage"
-          android:layout_width="fill_parent"
-          android:layout_height="wrap_content"
-          android:text="Send Msg" />
-
-    <Button
-        android:id="@+id/login"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-  </LinearLayout>
-
+    android:orientation="vertical">
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:orientation="horizontal">
+        <LinearLayout
+            android:layout_width="0dip"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/name"
+                android:layout_width="fill_parent"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Name"/>
+            <TextView
+                android:id="@+id/surname"
+                android:layout_width="fill_parent"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Surname"/>
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Sex"/>
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Year"/>
+        </LinearLayout>
+        <ImageView
+            android:id="@+id/userImage"
+            android:layout_width="170dp"
+            android:layout_height="fill_parent"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:orientation="vertical">
+        <Button
+            android:id="@+id/posttowall"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="30dp"
+            android:text="Send to wall"/>
+        <Button
+            android:id="@+id/sendMessage"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Send Msg"/>
+        <Button
+            android:id="@+id/login"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
 </LinearLayout>
