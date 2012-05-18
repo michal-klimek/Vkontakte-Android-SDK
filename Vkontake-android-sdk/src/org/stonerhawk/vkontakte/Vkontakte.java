@@ -19,257 +19,215 @@ import android.net.Uri;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 
-public class Vkontakte implements VkDialogListener
-{
-	public static final String CALLBACK_URL = "http://api.vkontakte.ru/blank.html";
-	private final String mUrl;
-	private static final String PREFS_NAME = "Vk:Captcha";
-	private SharedPreferences _prefs;
-	private SharedPreferences.Editor _editor;
+public class Vkontakte implements VkDialogListener {
+    public static final String CALLBACK_URL = "http://api.vkontakte.ru/blank.html";
+    private final String mUrl;
+    private static final String PREFS_NAME = "Vk:Captcha";
+    private SharedPreferences _prefs;
+    private SharedPreferences.Editor _editor;
 
-	private Context _context;
-	private VkontakteListener _listener;
-	private VkSession _vkSess;
-	private boolean _isCaptcha;
+    private Context _context;
+    private VkontakteListener _listener;
+    private VkSession _vkSess;
+    private boolean _isCaptcha;
 
-	private String _accessToken;
-	private String _expiresIn;
-	private String _userId;
-	private long _accessTime;
+    private String _accessToken;
+    private String _expiresIn;
+    private String _userId;
+    private long _accessTime;
 
-	private static final String VK_LOGOUT_URL = "http://api.vkontakte.ru/oauth/logout";
-	private static String VK_API_URL = "https://api.vkontakte.ru/method/";
+    private static final String VK_LOGOUT_URL = "http://api.vkontakte.ru/oauth/logout";
+    private static String VK_API_URL = "https://api.vkontakte.ru/method/";
 
-	public Vkontakte(Context context, String appId)
-	{
-		mUrl = "http://api.vkontakte.ru/oauth/authorize?client_id=" + appId + "&scope=wall,friends,notify,messages&redirect_uri=http://api.vkontakte.ru/blank.html&display=touch&response_type=token";
-		_context = context;
-		_vkSess = new VkSession(_context);
-		_prefs = _context.getSharedPreferences(PREFS_NAME, 0);
-		_editor = _prefs.edit();
-		CookieSyncManager.createInstance(context);
-	}
+    public Vkontakte(Context context, String appId) {
+        mUrl = "http://api.vkontakte.ru/oauth/authorize?client_id="
+                + appId
+                + "&scope=wall,friends,notify,messages&redirect_uri=http://api.vkontakte.ru/blank.html&display=touch&response_type=token";
+        _context = context;
+        _vkSess = new VkSession(_context);
+        _prefs = _context.getSharedPreferences(PREFS_NAME, 0);
+        _editor = _prefs.edit();
+        CookieSyncManager.createInstance(context);
+    }
 
-	private void fillTokenData(String[] params)
-	{
-		if (params != null)
-		{
-			_accessToken = params[0];
-			_expiresIn = params[1];
-			_userId = params[2];
-		}
-	}
+    private void fillTokenData(String[] params) {
+        if (params != null) {
+            _accessToken = params[0];
+            _expiresIn = params[1];
+            _userId = params[2];
+        }
+    }
 
-	public void setListener(VkontakteListener listener)
-	{
-		_listener = listener;
-	}
+    public void setListener(VkontakteListener listener) {
+        _listener = listener;
+    }
 
-	public void showLoginDialog()
-	{
-		new VkDialog(_context, mUrl, this).show();
-	}
+    public void showLoginDialog() {
+        new VkDialog(_context, mUrl, this).show();
+    }
 
-	public boolean isAuthorized()
-	{
-		String[] params = _vkSess.getAccessToken();
-		if (params != null)
-		{
-			fillTokenData(params);
-			_accessTime = Long.parseLong(params[3]);
+    public boolean isAuthorized() {
+        String[] params = _vkSess.getAccessToken();
+        if (params != null) {
+            fillTokenData(params);
+            _accessTime = Long.parseLong(params[3]);
 
-			long currentTime = System.currentTimeMillis();
-			long expireTime = (currentTime - _accessTime) / 1000;
+            long currentTime = System.currentTimeMillis();
+            long expireTime = (currentTime - _accessTime) / 1000;
 
-			if (_accessToken.equals("") & _expiresIn.equals("") & _userId.equals("") & _accessTime == 0)
-			{
-				return false;
-			}
-			else if (expireTime >= Long.parseLong(_expiresIn))
-			{
-				return false;
-			}
-			else
-			{
-				return true;
-			}
-		}
-		return false;
-	}
+            if (_accessToken.equals("") & _expiresIn.equals("")
+                    & _userId.equals("") & _accessTime == 0) {
+                return false;
+            } else if (expireTime >= Long.parseLong(_expiresIn)) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+        return false;
+    }
 
-	public void logOut()
-	{
-		HttpClient client = new DefaultHttpClient();
-		HttpGet request = new HttpGet(VK_LOGOUT_URL);
+    public void logOut() {
+        HttpClient client = new DefaultHttpClient();
+        HttpGet request = new HttpGet(VK_LOGOUT_URL);
 
-		try
-		{
-			HttpResponse response = client.execute(request);
-			HttpEntity entity = response.getEntity();
+        try {
+            HttpResponse response = client.execute(request);
+            HttpEntity entity = response.getEntity();
 
-			//String responseText = EntityUtils.toString(entity);
-			CookieManager.getInstance().removeAllCookie();
-			resetAccessToken();
-		}
-		catch (ClientProtocolException cexc)
-		{
-			cexc.printStackTrace();
-		}
-		catch (IOException ioex)
-		{
-			ioex.printStackTrace();
-		}
-	}
+            // String responseText = EntityUtils.toString(entity);
+            CookieManager.getInstance().removeAllCookie();
+            resetAccessToken();
+        } catch (ClientProtocolException cexc) {
+            cexc.printStackTrace();
+        } catch (IOException ioex) {
+            ioex.printStackTrace();
+        }
+    }
 
-	private JSONObject sendRequestWithCaptcha(String request, Boolean captha)
-	{
-		if (captha)
-		{
-			String captcha_sid = null;
-			String captcha_user = null;
-			request = request + "&captcha_sid=" + captcha_sid + "&captcha_key=" + Uri.encode(captcha_user);
-		}
-		JSONObject jsonresponse = null;
-		HttpClient client = new DefaultHttpClient();
-		HttpGet httpRequest = new HttpGet(request);
-		try
-		{
-			HttpResponse response = client.execute(httpRequest);
-			HttpEntity entity = response.getEntity();
-			try
-			{
-				String responseText = EntityUtils.toString(entity);
-				JSONObject jsonObj = new JSONObject(responseText);
-				if (jsonObj.has("error"))
-				{
-					
-					JSONObject errorObj = jsonObj.getJSONObject("error");
-					int errCode = errorObj.getInt("error_code");
-					if (errCode == 14)
-					{
-						_isCaptcha = true;
+    private JSONObject sendRequestWithCaptcha(String request, Boolean captha) {
+        if (captha) {
+            String captcha_sid = null;
+            String captcha_user = null;
+            request = request + "&captcha_sid=" + captcha_sid + "&captcha_key="
+                    + Uri.encode(captcha_user);
+        }
+        JSONObject jsonresponse = null;
+        HttpClient client = new DefaultHttpClient();
+        HttpGet httpRequest = new HttpGet(request);
+        try {
+            HttpResponse response = client.execute(httpRequest);
+            HttpEntity entity = response.getEntity();
+            try {
+                String responseText = EntityUtils.toString(entity);
+                JSONObject jsonObj = new JSONObject(responseText);
+                if (jsonObj.has("error")) {
 
-						String captcha_sid = errorObj.getString("captcha_sid");
-						String captcha_img = errorObj.getString("captcha_img");
+                    JSONObject errorObj = jsonObj.getJSONObject("error");
+                    int errCode = errorObj.getInt("error_code");
+                    if (errCode == 14) {
+                        _isCaptcha = true;
 
-						_editor.putString("captcha_img", captcha_img);
-						_editor.putString("captcha_sid", captcha_sid);
-						_editor.putString("request", request);
-						_editor.commit();
+                        String captcha_sid = errorObj.getString("captcha_sid");
+                        String captcha_img = errorObj.getString("captcha_img");
 
-						getCaptcha();
-					}
-				}
-				else
-				{
-					jsonresponse = jsonObj;
-				}
-			}
-			finally
-			{
-				if (entity != null)
-				{
-					try
-					{
-						entity.consumeContent();
-					}
-					catch (Exception e)
-					{
-						// TODO: handle exception
-					}
-				}
-			}
-		}
-		catch (ClientProtocolException cexc)
-		{
-			cexc.printStackTrace();
-		}
-		catch (IOException ioex)
-		{
-			ioex.printStackTrace();
-		}
-		catch (JSONException e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			client.getConnectionManager().shutdown();
-		}
-		return jsonresponse;
-	}
+                        _editor.putString("captcha_img", captcha_img);
+                        _editor.putString("captcha_sid", captcha_sid);
+                        _editor.putString("request", request);
+                        _editor.commit();
 
-	private void getCaptcha()
-	{
-		String captcha_img = _prefs.getString("captcha_img", "");
-	}
+                        getCaptcha();
+                    }
+                } else {
+                    jsonresponse = jsonObj;
+                }
+            } finally {
+                if (entity != null) {
+                    try {
+                        entity.consumeContent();
+                    } catch (Exception e) {
+                        // TODO: handle exception
+                    }
+                }
+            }
+        } catch (ClientProtocolException cexc) {
+            cexc.printStackTrace();
+        } catch (IOException ioex) {
+            ioex.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } finally {
+            client.getConnectionManager().shutdown();
+        }
+        return jsonresponse;
+    }
 
-	public String[] getAccessToken(String url)
-	{
-		String[] query = url.split("#");
-		String[] params = query[1].split("&");
-		params[0] = params[0].replace("access_token=", "");
-		params[1] = params[1].replace("expires_in=", "");
-		params[2] = params[2].replace("user_id=", "");
-		fillTokenData(params);
-		return params;
-	}
+    private void getCaptcha() {
+        String captcha_img = _prefs.getString("captcha_img", "");
+    }
 
-	public void saveAccessToken(String accessToken, String expires, String userId)
-	{
-		_vkSess.saveAccessToken(accessToken, expires, userId);
-	}
+    public String[] getAccessToken(String url) {
+        String[] query = url.split("#");
+        String[] params = query[1].split("&");
+        params[0] = params[0].replace("access_token=", "");
+        params[1] = params[1].replace("expires_in=", "");
+        params[2] = params[2].replace("user_id=", "");
+        fillTokenData(params);
+        return params;
+    }
 
-	public void resetAccessToken()
-	{
-		_vkSess.resetAccessToken();
-	}
+    public void saveAccessToken(String accessToken, String expires,
+            String userId) {
+        _vkSess.saveAccessToken(accessToken, expires, userId);
+    }
 
-	public boolean postToWall(String message)
-	{
-		String wallPostRequest = VK_API_URL + "wall.post?";
-		wallPostRequest += "owner_id=" + _userId + "&access_token=" + _accessToken + "&message=" + Uri.encode(message);
+    public void resetAccessToken() {
+        _vkSess.resetAccessToken();
+    }
 
-		sendRequestWithCaptcha(wallPostRequest, false);
+    public JSONObject postToWall(String message) {
+        String wallPostRequest = VK_API_URL + "wall.post?";
+        wallPostRequest += "owner_id=" + _userId + "&access_token="
+                + _accessToken + "&message=" + Uri.encode(message);
 
-		return true;
-	}
+        return sendRequestWithCaptcha(wallPostRequest, false);
+    }
+    
+    public static JSONObject getResponse(JSONObject raw) throws JSONException{
+        return raw.getJSONObject("response");
+    }
 
-	public JSONObject getUserProfile()
-	{
-		String url = VK_API_URL + "getProfiles?uids=" + _userId + "&access_token=" + _accessToken + "&fields=nickname,contacts";
-		return sendRequestWithCaptcha(url, false);
-	}
+    public JSONObject getUserProfile() {
+        String url = VK_API_URL + "getProfiles?uids=" + _userId
+                + "&access_token=" + _accessToken + "&fields=nickname,contacts";
+        return sendRequestWithCaptcha(url, false);
+    }
 
-	public String getUserId()
-	{
-		return _userId;
-	}
+    public String getUserId() {
+        return _userId;
+    }
 
-	public interface VkontakteListener
-	{
-		void onPostComplete(String result);
+    public interface VkontakteListener {
+        void onPostComplete(String result);
 
-		void onPostError(String result);
+        void onPostError(String result);
 
-		void onLoginComplete(String result);
+        void onLoginComplete(String result);
 
-		void onLoginError(String result);
+        void onLoginError(String result);
 
-		void didEndGettingUserInfo(String result);
-	}
+        void didEndGettingUserInfo(String result);
+    }
 
-	@Override
-	public void onComplete(String url)
-	{
-		String[] tokenData = getAccessToken(url);
-		saveAccessToken(tokenData[0], tokenData[1], tokenData[2]);
-		_listener.onLoginComplete(url);
-	}
+    @Override
+    public void onComplete(String url) {
+        String[] tokenData = getAccessToken(url);
+        saveAccessToken(tokenData[0], tokenData[1], tokenData[2]);
+        _listener.onLoginComplete(url);
+    }
 
-	@Override
-	public void onError(String description)
-	{
-		_listener.onLoginError(description);
-	}
+    @Override
+    public void onError(String description) {
+        _listener.onLoginError(description);
+    }
 }
